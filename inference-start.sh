@@ -51,10 +51,16 @@ docker image prune -f
 check_exit_code "docker image prune -f"
 
 # Start new updated container
+# Limit the container RAM usage to 12 GBs and restart it if it exceeds that threshold
+# Setting the swap to equal value as RAM makes sure that the swap is disabled inside of
+# the container to maximize the performance
 docker run -d \
   --name incident-inference-service \
   --restart unless-stopped \
   --gpus all,capabilities=video \
   -e IIS_STORAGE_PATH=/root/.incident-inference-service-data \
   -v $(echo ~/.incident-inference-service-data):/root/.incident-inference-service-data \
+  -v $(echo ~/.incident-inference-config):/root/.incident-inference-config \
+  --memory=12g \
+  --memory-swap=12g \
   boskodev8/incident-inference-service:latest
